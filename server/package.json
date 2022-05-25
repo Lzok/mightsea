@@ -1,0 +1,90 @@
+{
+    "name": "mightsea-server",
+    "version": "0.0.1",
+    "description": "OpenSea ultra-basic server clone for Mighty Block",
+    "main": "index.js",
+    "scripts": {
+        "preinstall": "npx only-allow npm",
+        "prepare": "cd ../ && husky install ./server/.husky",
+        "start": "node -r dotenv/config -r ./register.js ./dist/server/src/index.js",
+        "dev": "nodemon -r dotenv/config -r tsconfig-paths/register src/index.ts",
+        "build": "npm run build-ts && ./post-build.sh",
+        "watch-node": "nodemon dist/index.js",
+        "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+        "test": "cross-env NODE_ENV=test jest --forceExit --coverage --verbose --detectOpenHandles",
+        "test:unit": "cross-env NODE_ENV=test jest --forceExit --verbose --detectOpenHandles --testPathPattern=src/tests/unit",
+        "test:integration": "cross-env NODE_ENV=test jest --forceExit --verbose --detectOpenHandles --testPathPattern=src/tests/integration",
+        "test:specific": "cross-env NODE_ENV=test jest --forceExit --verbose --detectOpenHandles",
+        "watch-test": "cross-env NODE_ENV=test npm run test -- --watchAll",
+        "build-ts": "tsc",
+        "watch-ts": "tsc -w --resolveJsonModule",
+        "debug": "npm run build && npm run watch-debug",
+        "serve-debug": "nodemon --inspect -r dotenv/config dist/server/src/index.js",
+        "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\"",
+        "do:pretty": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+        "do:lint": "tsc --noEmit && eslint \"src/**/*.{js,ts}\" --quiet --fix"
+    },
+    "author": "Leandro Echevarria <echevarrialeandro@gmail.com>",
+    "license": "Propietary",
+    "dependencies": {
+        "body-parser": "^1.20.0",
+        "cookie-parser": "^1.4.6",
+        "dotenv": "^16.0.1",
+        "express": "^4.18.1",
+        "helmet": "^5.1.0",
+        "jsonwebtoken": "^8.5.1",
+        "minio": "^7.0.28",
+        "morgan": "^1.10.0",
+        "multer": "^1.4.4",
+        "passport": "^0.6.0",
+        "passport-jwt": "^4.0.0",
+        "pg": "^8.7.3",
+        "slonik": "^28.1.0",
+        "tsconfig-paths": "^4.0.0",
+        "winston": "^3.7.2",
+        "zod": "^3.16.0"
+    },
+    "devDependencies": {
+        "@anatine/zod-mock": "^3.1.1",
+        "@types/cookie-parser": "^1.4.3",
+        "@types/express": "^4.17.13",
+        "@types/jest": "^27.5.1",
+        "@types/minio": "^7.0.13",
+        "@types/morgan": "^1.9.3",
+        "@types/multer": "^1.4.7",
+        "@types/node": "^17.0.34",
+        "@types/passport": "^1.0.7",
+        "@types/passport-jwt": "^3.0.6",
+        "@types/pg": "^8.6.5",
+        "@types/supertest": "^2.0.12",
+        "@typescript-eslint/eslint-plugin": "^5.25.0",
+        "@typescript-eslint/parser": "^5.25.0",
+        "concurrently": "^7.2.0",
+        "cross-env": "^7.0.3",
+        "eslint": "^8.16.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-sql": "^2.1.0",
+        "faker": "^5.5.3",
+        "husky": "^8.0.1",
+        "jest": "^28.1.0",
+        "klona": "^2.0.5",
+        "lint-staged": "^12.4.1",
+        "nodemon": "^2.0.16",
+        "prettier": "^2.6.2",
+        "supertest": "^6.2.3",
+        "ts-jest": "^28.0.2",
+        "ts-node": "^10.8.0"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged",
+            "pre-push": "npm run test"
+        }
+    },
+    "lint-staged": {
+        "*.{ts}": [
+            "npm run do:pretty",
+            "npm run do:lint"
+        ]
+    }
+}

@@ -1,0 +1,21 @@
+# Git related files
+.git
+.gitignore
+.gitkeep
+
+# Docker related files
+Dockerfile
+.dockerignore
+docker-compose.yaml
+volumes/
+
+# Project related files
+node_modules
+build
+dist
+.vscode
+.husky
+coverage
+
+# Other kind of files/directories
+.DS_Store

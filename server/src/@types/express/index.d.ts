@@ -1,15 +1,19 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
-import { UserSession } from '@src/@types/user';
+import { UserEntity } from '@src/@types/user';
 
 declare global {
 	namespace Express {
 		interface User {
-			_id: string;
+			id: string;
+			name: string;
 			email: string;
+			balance: number;
+			created_at: Date;
+			updated_at: Date;
 		}
 
 		export interface Request {
-			user?: UserSession;
+			user?: UserEntity;
 		}
 	}
 }

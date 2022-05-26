@@ -18,7 +18,7 @@ type END_SIGNALS = 'SIGTERM' | 'SIGINT';
 
 const startGracefulShutdown = async (signal: END_SIGNALS) => {
 	logger.info(
-		`Starting shutdown of express Mightagram because of ${signal} signal...`
+		`Starting shutdown of express Mightsea because of ${signal} signal...`
 	);
 	await shutdownPool();
 	server.close(() => {

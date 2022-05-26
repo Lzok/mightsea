@@ -4,7 +4,7 @@ config();
 function getCookieMaxAge(jwtExpires: string): number {
 	const numberOfDays = parseInt(jwtExpires.split('d')[0], 10);
 
-	// We take just the number of days an return it in seconds to be used in the cookie.
+	// We take just the number of days and return it in seconds to be used in the cookie.
 	return numberOfDays * 24 * 60 * 60 * 1000;
 }
 

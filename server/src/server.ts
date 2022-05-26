@@ -9,7 +9,7 @@ import morgan from './config/morgan';
 import { jwtStrategy } from './config/passport';
 import { tracer } from './middlewares/tracer';
 
-// import nftRoutes from './routes/v1/nfts';
+import nftRoutes from './routes/v1/nfts';
 import authRoutes from './routes/v1/auth';
 
 const jsonParser = bodyParser.json();
@@ -44,6 +44,7 @@ app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
 
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/nfts', nftRoutes);
 
 app.use((err: Request, _: Request, res: Response) => {
 	errorHandler(err, res);

@@ -29,3 +29,8 @@ export const nftInsertSchema = nftMintSchema.extend({
 	path: z.string().max(2048),
 	owner_id: idSchema,
 });
+
+export const buyNft = z.object({
+	nft_id: idSchema,
+	buyer_id: idSchema,
+});

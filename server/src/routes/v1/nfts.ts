@@ -1,11 +1,14 @@
 import express, { Request, Response } from 'express';
 import { authenticate } from '@src/middlewares/auth';
-import { mint } from '@src/controllers/nfts';
+import { buy, mint } from '@src/controllers/nfts';
 import logger from '@src/config/logger';
 import { sendResponse } from '@src/errors/format';
 import { uploadSingleFile } from '@src/middlewares/uploads';
 import { validate } from '@src/middlewares/validations';
-import { mint as mintValidation } from '@src/validations/nfts';
+import {
+	mint as mintValidation,
+	buy as buyValidation,
+} from '@src/validations/nfts';
 import { UserId } from '@src/@types/user';
 
 const router = express.Router();
@@ -31,6 +34,25 @@ router
 				};
 
 				const result = await mint(payload);
+
+				return sendResponse(response, result);
+			} catch (error) {
+				logger.error('Error route /api/v1/nfts/mint ', error);
+				return sendResponse(response, error);
+			}
+		}
+	);
+
+router
+	.route('/buy')
+	.post(
+		authenticate(),
+		validate(buyValidation),
+		async (request: Request, response: Response) => {
+			const { nft_id, buyer_id } = request.body;
+
+			try {
+				const result = await buy(nft_id, buyer_id);
 
 				return sendResponse(response, result);
 			} catch (error) {

@@ -7,4 +7,10 @@ export const userErrors: ErrorMap = {
 		message: 'The requested user was not found.',
 		statusCode: HTTP_CODES.NOT_FOUND,
 	},
+	USER_INSUFICIENT_BALANCE: {
+		code: 'USER_INSUFICIENT_BALANCE',
+		message:
+			'The user does not have at least the required amount to buy the nft.',
+		statusCode: HTTP_CODES.BAD_REQUEST,
+	},
 };

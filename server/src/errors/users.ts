@@ -7,6 +7,11 @@ export const userErrors: ErrorMap = {
 		message: 'The requested user was not found.',
 		statusCode: HTTP_CODES.NOT_FOUND,
 	},
+	USER_ALREADY_OWNER: {
+		code: 'USER_ALREADY_OWNER',
+		message: 'The user is already the owner of the nft.',
+		statusCode: HTTP_CODES.NOT_FOUND,
+	},
 	USER_INSUFICIENT_BALANCE: {
 		code: 'USER_INSUFICIENT_BALANCE',
 		message:

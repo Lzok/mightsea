@@ -1,10 +1,12 @@
 import { z } from 'zod';
 import { idSchema, dateSchema } from './shared';
 
+const priceSchema = z.number().positive();
+
 export const nftEntitySchema = z.object({
 	id: idSchema,
 	description: z.string().optional().default(''),
-	price: z.number().positive(),
+	price: priceSchema,
 	path: z.string().max(2048),
 	created_at: dateSchema,
 	updated_at: dateSchema,
@@ -33,4 +35,9 @@ export const nftInsertSchema = nftMintSchema.extend({
 export const buyNft = z.object({
 	nft_id: idSchema,
 	buyer_id: idSchema,
+});
+
+export const priceUpdateSchema = z.object({
+	nft_id: idSchema,
+	price: priceSchema,
 });

@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { authenticate } from '@src/middlewares/auth';
-import { buy, mint } from '@src/controllers/nfts';
+import { buy, mint, updatePrice } from '@src/controllers/nfts';
 import logger from '@src/config/logger';
 import { sendResponse } from '@src/errors/format';
 import { uploadSingleFile } from '@src/middlewares/uploads';
@@ -8,6 +8,7 @@ import { validate } from '@src/middlewares/validations';
 import {
 	mint as mintValidation,
 	buy as buyValidation,
+	updatePrice as updatePriceValidation,
 } from '@src/validations/nfts';
 import { UserId } from '@src/@types/user';
 
@@ -37,7 +38,7 @@ router
 
 				return sendResponse(response, result);
 			} catch (error) {
-				logger.error('Error route /api/v1/nfts/mint ', error);
+				logger.error('Error route [POST] /api/v1/nfts/mint ', error);
 				return sendResponse(response, error);
 			}
 		}
@@ -56,7 +57,27 @@ router
 
 				return sendResponse(response, result);
 			} catch (error) {
-				logger.error('Error route /api/v1/nfts/mint ', error);
+				logger.error('Error route [POST] /api/v1/nfts/buy ', error);
+				return sendResponse(response, error);
+			}
+		}
+	);
+
+router
+	.route('/price')
+	.patch(
+		authenticate(),
+		validate(updatePriceValidation),
+		async (request: Request, response: Response) => {
+			const user_id = request.user?.id as UserId;
+			const { nft_id, price } = request.body;
+
+			try {
+				const result = await updatePrice(nft_id, user_id, price);
+
+				return sendResponse(response, result);
+			} catch (error) {
+				logger.error('Error route [PATCH] /api/v1/nfts/price ', error);
 				return sendResponse(response, error);
 			}
 		}

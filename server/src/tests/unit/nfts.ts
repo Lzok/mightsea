@@ -1,22 +1,17 @@
 import * as nftController from '@src/controllers/nfts';
 import { APIError } from '@src/errors/apiError';
+import { NFTBuyData } from '@src/queries/nfts/getDataBuyProcess';
 
-describe.only('NFTs controller', () => {
+describe('NFTs controller', () => {
 	describe('Fn calculateRoyalties', () => {
 		test('It should calculate the amounts ok when there is more than one creator', () => {
 			const price = 42;
-			const creators = [
+			const creators: NFTBuyData['creators'] = [
 				{
-					id: 'asdasd',
-					price: 42,
-					owner_id: 'owner1',
 					user_id: 'userid1',
 					balance: 100,
 				},
 				{
-					id: 'asdasd',
-					price: 42,
-					owner_id: 'owner2',
 					user_id: 'userid2',
 					balance: 100,
 				},
@@ -32,18 +27,12 @@ describe.only('NFTs controller', () => {
 		test('It should throw if we pass zero as the price', () => {
 			const fn = nftController.calculateRoyalties;
 			const price = 0;
-			const creators = [
+			const creators: NFTBuyData['creators'] = [
 				{
-					id: 'asdasd',
-					price: 42,
-					owner_id: 'owner1',
 					user_id: 'userid1',
 					balance: 100,
 				},
 				{
-					id: 'asdasd',
-					price: 42,
-					owner_id: 'owner2',
 					user_id: 'userid2',
 					balance: 100,
 				},

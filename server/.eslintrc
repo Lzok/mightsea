@@ -24,21 +24,7 @@
 		"semi": ["error", "always"],
 		"no-var": "error",
 		"prefer-arrow-callback": ["error", { "allowNamedFunctions": false }],
-		"arrow-body-style": "off",
-		"sql/format": [
-			2,
-			{
-				"ignoreExpressions": false,
-				"ignoreInline": true,
-				"ignoreTagless": true
-			}
-		],
-		"sql/no-unsafe-query": [
-			2,
-			{
-				"allowLiteral": false
-			}
-		]
+		"arrow-body-style": "off"
 	},
 	"env": {
 		"es6": true,

@@ -7,13 +7,15 @@ export type NFTBuyData = {
 	id: NftId;
 	price: number;
 	owner_id: UserId;
-	user_id: UserId;
-	balance: number;
 	owner_balance: number;
+	creators: {
+		user_id: UserId;
+		balance: number;
+	}[];
 };
 type Return = {
 	buyerData: UserBasicData | null;
-	nftData: NFTBuyData[] | null;
+	nftData: NFTBuyData | null;
 };
 export async function getDataBuyProcess(
 	nft_id: NftId,
@@ -29,7 +31,7 @@ export async function getDataBuyProcess(
 		`);
 
 		const nftDataProm = pool.query(sql`
-			SELECT nfts.id, price, owner_id, owner.balance as owner_balance, creators.user_id, users.balance
+			SELECT nfts.id, price, owner_id, owner.balance as owner_balance, json_agg(json_build_object('user_id', creators.user_id, 'balance', users.balance)) as creators
 			FROM nfts
 			INNER JOIN users_nfts as creators
 			ON nfts.id = creators.nft_id
@@ -38,6 +40,7 @@ export async function getDataBuyProcess(
 			INNER JOIN users as owner
 			ON nfts.owner_id = owner.id
 			WHERE nfts.id = ${nft_id}
+			GROUP BY nfts.id, owner.id
 		`);
 
 		const [buyerData, nftData] = await Promise.all([
@@ -53,7 +56,9 @@ export async function getDataBuyProcess(
 				? (buyerData.rows[0] as UserBasicData)
 				: null;
 		const nftObj =
-			nftData.rows.length > 0 ? (nftData.rows as NFTBuyData[]) : null;
+			nftData.rows.length > 0
+				? (nftData.rows[0] as unknown as NFTBuyData)
+				: null;
 
 		return {
 			buyerData: buyerObj,

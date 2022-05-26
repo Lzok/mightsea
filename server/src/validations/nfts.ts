@@ -1,4 +1,4 @@
-import { buyNft, nftMintSchema } from '@src/schemas/nft';
+import { buyNft, nftMintSchema, priceUpdateSchema } from '@src/schemas/nft';
 
 export const mint = {
 	body: nftMintSchema,
@@ -6,4 +6,8 @@ export const mint = {
 
 export const buy = {
 	body: buyNft,
+};
+
+export const updatePrice = {
+	body: priceUpdateSchema,
 };

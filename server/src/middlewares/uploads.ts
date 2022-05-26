@@ -4,6 +4,7 @@ import { FILE_VALIDATIONS as FV } from '@src/config/uploads';
 import { APIError } from '@src/errors/apiError';
 import { fileErrors } from '@src/errors/uploads';
 import logger from '@src/config/logger';
+import { sendResponse } from '@src/errors/format';
 
 const memStorage = multer.memoryStorage();
 
@@ -39,9 +40,10 @@ export const uploadSingleFile = async (
 				logger.error('Multer error uploading single file');
 				const e = handleMulterError(err);
 
-				return next(new APIError(e));
+				// Return response to the client here.
+				return sendResponse(res, e);
 			} else if (err) {
-				return next(err);
+				return sendResponse(res, err);
 			}
 
 			return next();

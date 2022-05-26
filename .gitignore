@@ -37,6 +37,7 @@ testem.log
 docker/.env
 
 docker/volumes/*
+docker/volumes.seeded.bak/*
 
 .env
 .env.test

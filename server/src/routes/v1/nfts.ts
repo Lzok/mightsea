@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { authenticate } from '@src/middlewares/auth';
-import { buy, mint, updatePrice } from '@src/controllers/nfts';
+import { buy, feed, mint, updatePrice } from '@src/controllers/nfts';
 import logger from '@src/config/logger';
 import { sendResponse } from '@src/errors/format';
 import { uploadSingleFile } from '@src/middlewares/uploads';
@@ -9,10 +9,34 @@ import {
 	mint as mintValidation,
 	buy as buyValidation,
 	updatePrice as updatePriceValidation,
+	paginationValidation,
 } from '@src/validations/nfts';
 import { UserId } from '@src/@types/user';
+import { PaginationQuery } from '@src/@types/shared';
 
 const router = express.Router();
+
+router
+	.route('/')
+	.get(
+		authenticate(),
+		validate(paginationValidation),
+		async (request: Request, response: Response) => {
+			try {
+				const { page, limit } =
+					request.query as unknown as PaginationQuery;
+
+				logger.info('page', { page });
+				logger.info('limit', { limit });
+				const result = await feed(page ?? 1, limit ?? 1);
+
+				return sendResponse(response, result);
+			} catch (error) {
+				logger.error('Error route [GET] /api/v1/nfts ', error);
+				return sendResponse(response, error);
+			}
+		}
+	);
 
 router
 	.route('/mint')

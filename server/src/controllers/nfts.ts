@@ -19,6 +19,11 @@ import { assertNonNullish } from '@src/utils/types';
 import { NewBalances, updateAfterBuy } from '@src/queries/nfts/updateAfterBuy';
 import { getNftById } from '@src/queries/nfts/getById';
 import { updateNftPrice } from '@src/queries/nfts/updateNftPrice';
+import { getFeed } from '@src/queries/nfts/getFeed';
+
+export async function feed(page: number, limit: number) {
+	return getFeed(page, limit);
+}
 
 type MintArgs = {
 	owner_id: UserId;
@@ -207,3 +212,4 @@ export async function updatePrice(
 		throw error;
 	}
 }
+

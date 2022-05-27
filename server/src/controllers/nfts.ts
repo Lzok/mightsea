@@ -89,6 +89,9 @@ export async function buy(nft_id: NftId, buyer: UserId) {
 	const pricingData = calculateRoyalties(nftData.price, nftData.creators);
 	const newBalances = calculateNewBalances(buyerData, nftData, pricingData);
 
+	logger.info('Royalties Data: ', { pricingData });
+	logger.info('New Balances: ', { newBalances });
+
 	const savedBuy = await updateAfterBuy(
 		nft_id,
 		buyer,
@@ -114,7 +117,7 @@ export function calculateRoyalties(
 ) {
 	// This should not happen since we are getting the price from the database and not from the user input.
 	if (price <= 0) throw new APIError(nftErrors.NFT_BAD_PRICING);
-	logger.info('CREATORS', { creators });
+
 	// 20% of the selling price will go to the creators as royalties
 	const royaltyToShare = parseFloat(((price / 100) * 20).toFixed(2));
 	const howMuchToOwner = parseFloat((price - royaltyToShare).toFixed(2));

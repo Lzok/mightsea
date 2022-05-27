@@ -48,9 +48,6 @@ export async function getDataBuyProcess(
 			nftDataProm,
 		]);
 
-		logger.info('Buyer Data: ', { buyerData });
-		logger.info('Nft Data: ', { nftData });
-
 		const buyerObj =
 			buyerData.rows.length > 0
 				? (buyerData.rows[0] as UserBasicData)

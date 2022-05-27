@@ -7,7 +7,7 @@ services:
     container_name: mightsea-postgres-test
     volumes:
       - ./volumes/postgres-data-test:/var/lib/postgresql/data
-      - ./configs/postgres/scripts:/docker-entrypoint-initdb.d
+      - ./configs/postgres/scripts-test:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432
     environment:

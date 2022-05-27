@@ -53,28 +53,30 @@ export async function updateAfterBuy(
                 `);
 			});
 
-			const [
-				newOwnership,
-				oldOwnerBalance,
-				newOwnerBalance,
-				creatorsBalance,
-			] = await Promise.all([
-				newOwnershipProm,
-				oldOwnerBalanceProm,
-				newOwnerBalanceProm,
-				creatorsBalanceProm,
-			]);
+			const [newOwnership, oldOwnerBalance, newOwnerBalance] =
+				await Promise.all([
+					newOwnershipProm,
+					oldOwnerBalanceProm,
+					newOwnerBalanceProm,
+					...creatorsBalanceProm,
+				]);
 
-			logger.info('New Ownership: ', { newOwnership });
-			logger.info('Old Ownership balance: ', { oldOwnerBalance });
-			logger.info('New Ownership balance: ', { newOwnerBalance });
-			logger.info('Creators Balance: ', { creatorsBalance });
+			const selectedCreatorsBalance = await tsxConn.query(sql`
+				SELECT nfts.id, price, owner_id, json_agg(json_build_object('user_id', creators.user_id, 'balance', users.balance, 'name', users.name)) as creators
+				FROM nfts
+				INNER JOIN users_nfts as creators
+				ON nfts.id = creators.nft_id
+				INNER JOIN users
+				ON creators.user_id = users.id
+				WHERE nfts.id = ${nft_id}
+				GROUP BY nfts.id
+			`);
 
 			return {
-				newOwnership,
-				oldOwnerBalance,
-				newOwnerBalance,
-				creatorsBalance,
+				newOwnership: newOwnership.rows,
+				oldOwnerBalance: oldOwnerBalance.rows,
+				newOwnerBalance: newOwnerBalance.rows,
+				creatorsBalance: selectedCreatorsBalance.rows[0].creators,
 			};
 		});
 

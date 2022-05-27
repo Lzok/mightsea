@@ -80,10 +80,12 @@ router
 		authenticate(),
 		validate(buyValidation),
 		async (request: Request, response: Response) => {
-			const { nft_id, buyer_id } = request.body;
+			const user = request.user;
+			const { nft_id } = request.body;
 
 			try {
-				const result = await buy(nft_id, buyer_id);
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				const result = await buy(nft_id, user!.id);
 
 				return sendResponse(response, result);
 			} catch (error) {

@@ -10,7 +10,7 @@ export const userErrors: ErrorMap = {
 	USER_ALREADY_OWNER: {
 		code: 'USER_ALREADY_OWNER',
 		message: 'The user is already the owner of the nft.',
-		statusCode: HTTP_CODES.NOT_FOUND,
+		statusCode: HTTP_CODES.BAD_REQUEST,
 	},
 	USER_INSUFICIENT_BALANCE: {
 		code: 'USER_INSUFICIENT_BALANCE',

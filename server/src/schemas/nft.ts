@@ -34,7 +34,6 @@ export const nftInsertSchema = nftMintSchema.extend({
 
 export const buyNft = z.object({
 	nft_id: idSchema,
-	buyer_id: idSchema,
 });
 
 export const priceUpdateSchema = z.object({

@@ -9,7 +9,10 @@ export const dateSchema = z.preprocess((arg) => {
 }, z.date());
 
 export const paginationParamsSchema = z
-	.preprocess((a) => Number(z.string().parse(a)), z.number().positive())
+	.preprocess(
+		(a) => Number(z.string().parse(a)),
+		z.number().positive().default(1)
+	)
 	.optional();
 
 export const paginationQuerySchema = z.object({

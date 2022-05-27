@@ -13,6 +13,10 @@ import {
 } from '@src/validations/nfts';
 import { UserId } from '@src/@types/user';
 import { PaginationQuery } from '@src/@types/shared';
+import {
+	DEFAULT_PAGINATION_PAGE,
+	DEFAULT_PAGINATION_SIZE,
+} from '@src/constants/pagination';
 
 const router = express.Router();
 
@@ -26,9 +30,10 @@ router
 				const { page, limit } =
 					request.query as unknown as PaginationQuery;
 
-				logger.info('page', { page });
-				logger.info('limit', { limit });
-				const result = await feed(page ?? 1, limit ?? 1);
+				const result = await feed(
+					page ?? DEFAULT_PAGINATION_PAGE,
+					limit ?? DEFAULT_PAGINATION_SIZE
+				);
 
 				return sendResponse(response, result);
 			} catch (error) {

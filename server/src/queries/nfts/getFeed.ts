@@ -1,10 +1,19 @@
 import { getPool, sql } from '@src/config/db';
 import logger from '@src/config/logger';
+import {
+	DEFAULT_PAGINATION_PAGE,
+	DEFAULT_PAGINATION_SIZE,
+} from '@src/constants/pagination';
+import { getPaginationValues } from '@src/utils/pagination';
 
-export async function getFeed(page = 1, limit = 3) {
+export async function getFeed(
+	page: number = DEFAULT_PAGINATION_SIZE,
+	size: number = DEFAULT_PAGINATION_PAGE
+) {
 	try {
+		const { limit, offset } = getPaginationValues(page, size);
+
 		const pool = await getPool();
-		const offset = page * limit;
 
 		const result = await pool.transaction(async (tsxConn) => {
 			const countProm = tsxConn.query(sql`
@@ -20,7 +29,6 @@ export async function getFeed(page = 1, limit = 3) {
                 LIMIT ${limit}
                 OFFSET ${offset}
             `);
-			// WHERE nfts.created_at > ${last}
 
 			const [totalRaw, nftsRaw] = await Promise.all([
 				countProm,
@@ -29,9 +37,9 @@ export async function getFeed(page = 1, limit = 3) {
 
 			const total = totalRaw.rows[0].count as number;
 			const total_pages = Math.ceil(total / limit);
-			const nfts = nftsRaw.rows;
+			const rows = nftsRaw.rows;
 
-			return { current_page: page, total_pages, nfts };
+			return { current_page: page, total_pages, rows };
 		});
 
 		if (!result) return null;

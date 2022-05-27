@@ -11,18 +11,18 @@ export async function insertOne(data: NewNftArgs) {
 			const savedNft = await tsxConn.query(
 				sql`INSERT INTO nfts (description, price, path, owner_id)
                 VALUES (${description}, ${price}, ${path}, ${owner_id})
-                RETURNING id`
+                RETURNING id, description, price, path, owner_id`
 			);
 
-			const nftid = savedNft.rows[0].id;
-			const values = creators.map((c) => [nftid, c]);
+			const nft = savedNft.rows[0];
+			const values = creators.map((c) => [nft.id, c]);
 
 			await tsxConn.query(sql`
 			    INSERT INTO users_nfts (nft_id, user_id)
 			    SELECT * FROM
                 ${sql.unnest(values, [`uuid`, `uuid`])}`);
 
-			return nftid;
+			return nft;
 		});
 
 		return result;

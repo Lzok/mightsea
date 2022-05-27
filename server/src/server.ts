@@ -50,11 +50,4 @@ app.use((err: Request, _: Request, res: Response) => {
 	errorHandler(err, res);
 });
 
-/**
- * Primary app routes.
- */
-app.get('/', (request: Request, response: Response): object =>
-	response.send(request.headers)
-);
-
 export default app;

@@ -17,6 +17,7 @@ import {
 	DEFAULT_PAGINATION_PAGE,
 	DEFAULT_PAGINATION_SIZE,
 } from '@src/constants/pagination';
+import { HTTP_CODES } from '@src/constants/http';
 
 const router = express.Router();
 
@@ -65,7 +66,7 @@ router
 
 				const result = await mint(payload);
 
-				return sendResponse(response, result);
+				return sendResponse(response, result, HTTP_CODES.CREATED);
 			} catch (error) {
 				logger.error('Error route [POST] /api/v1/nfts/mint ', error);
 				return sendResponse(response, error);

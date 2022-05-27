@@ -46,6 +46,12 @@ export const uploadSingleFile = async (
 				return sendResponse(res, err);
 			}
 
+			if (!req.file)
+				return sendResponse(
+					res,
+					new APIError(fileErrors.FILE_IS_REQUIRED)
+				);
+
 			return next();
 		}
 	);
@@ -53,5 +59,8 @@ export const uploadSingleFile = async (
 
 function handleMulterError(err: multer.MulterError) {
 	// LIMIT_UNEXPECTED_FILE as default return
-	return fileErrors[err.code] ?? fileErrors['LIMIT_UNEXPECTED_FILE'];
+	return (
+		new APIError(fileErrors[err.code]) ??
+		new APIError(fileErrors['LIMIT_UNEXPECTED_FILE'])
+	);
 }

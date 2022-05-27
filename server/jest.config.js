@@ -17,7 +17,7 @@ module.exports = {
 	transform: tsjPreset.transform,
 	collectCoverage: true,
 	coverageDirectory: 'coverage',
-	modulePathIgnorePatterns: ['/tests/config/.*', '/tests/factories/.*'],
+	modulePathIgnorePatterns: ['/tests/fixtures/*'],
 	testPathIgnorePatterns: ['./node_modules/', './dist'],
 	verbose: true,
 	testRegex: '(/tests/.*|(\\.|/)(test|spec))\\.ts?$',

@@ -36,7 +36,7 @@ export async function mint(dataToMint: MintArgs) {
 	const nftSaved = await saveNftToS3(dataToMint.nft);
 
 	const { description, price, owner_id, creators } = dataToMint;
-	const nft_id = await insertOne({
+	const nft = await insertOne({
 		description,
 		price,
 		owner_id,
@@ -44,7 +44,13 @@ export async function mint(dataToMint: MintArgs) {
 		path: nftSaved.path,
 	});
 
-	return { nft_id, path: nftSaved.path };
+	return {
+		nft_id: nft.id,
+		description: nft.description,
+		price: nft.price,
+		path: nft.path,
+		owner_id: nft.owner_id,
+	};
 }
 
 export async function saveNftToS3(nft: Express.Multer.File) {

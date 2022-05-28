@@ -21,28 +21,25 @@ import { HTTP_CODES } from '@src/constants/http';
 
 const router = express.Router();
 
-router
-	.route('/')
-	.get(
-		authenticate(),
-		validate(paginationValidation),
-		async (request: Request, response: Response) => {
-			try {
-				const { page, limit } =
-					request.query as unknown as PaginationQuery;
+router.route('/').get(
+	// authenticate(),
+	validate(paginationValidation),
+	async (request: Request, response: Response) => {
+		try {
+			const { page, limit } = request.query as unknown as PaginationQuery;
 
-				const result = await feed(
-					page ?? DEFAULT_PAGINATION_PAGE,
-					limit ?? DEFAULT_PAGINATION_SIZE
-				);
+			const result = await feed(
+				page ?? DEFAULT_PAGINATION_PAGE,
+				limit ?? DEFAULT_PAGINATION_SIZE
+			);
 
-				return sendResponse(response, result);
-			} catch (error) {
-				logger.error('Error route [GET] /api/v1/nfts ', error);
-				return sendResponse(response, error);
-			}
+			return sendResponse(response, result);
+		} catch (error) {
+			logger.error('Error route [GET] /api/v1/nfts ', error);
+			return sendResponse(response, error);
 		}
-	);
+	}
+);
 
 router
 	.route('/mint')

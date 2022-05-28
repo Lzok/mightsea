@@ -9,7 +9,6 @@ type UserProps = {
 };
 
 const UserInfoHeader: NextPage<UserProps> = ({ user }) => {
-	console.log('user', user);
 	return (
 		<>
 			<Image

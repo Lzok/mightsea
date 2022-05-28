@@ -3,10 +3,11 @@ import { API_V1_URL } from '../constants/urls';
 import { useRouter } from 'next/router';
 import { UserBasicData } from '../@types/user';
 import { APIResponse } from '../@types/shared';
+import { NFT } from '../@types/nfts';
 
-async function fakeAuth(user_id: string) {
-	const body = { user_id };
-	const fetcher = fetch(`${API_V1_URL}/auth/fake`, {
+async function buyNft(nft_id: NFT['id']) {
+	const body = { nft_id };
+	const fetcher = fetch(`${API_V1_URL}/nfts/buy`, {
 		headers: {
 			'Content-Type': 'application/json',
 		},
@@ -31,14 +32,13 @@ export const useLogin = () => {
 	const queryClient = useQueryClient();
 	const router = useRouter();
 
-	return useMutation(fakeAuth, {
+	return useMutation(buyNft, {
 		retry: false,
 		onError: (error: Error) => {
-			console.error(error);
 			throw new Error(error.message);
 		},
-		onSuccess: (result) => {
-			queryClient.setQueryData('currentUser', result);
+		onSuccess: () => {
+			queryClient.refetchQueries('feedNft');
 
 			router.reload();
 		},

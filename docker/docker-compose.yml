@@ -110,25 +110,23 @@ services:
       mightsea-postgres:
         condition: service_healthy
 
-  # frontend:
-  #   build:
-  #     context: ../client
-  #     dockerfile: Dockerfile
-  #     target: dev
-  #   container_name: mightsea-frontend
-  #   command: npm run dev
-  #   env_file:
-  #     - ../client/.env.local
-  #   ports:
-  #     - '3000:3000'
-  #   volumes:
-  #     - '../client:/opt/app'
-  #     - '../library:/opt/library'
-  #     - '../utils:/opt/utils'
-  #     - node-modules-front:/opt/app/node_modules
-  #   depends_on:
-  #     - backend
+  frontend:
+    build:
+      context: ../client
+      dockerfile: Dockerfile
+      target: dev
+    container_name: mightsea-frontend
+    command: npm run dev
+    env_file:
+      - ../client/.env.local
+    ports:
+      - '3000:3000'
+    volumes:
+      - '../client:/opt/app'
+      - node-modules-front:/opt/app/node_modules
+    depends_on:
+      - backend
 
 volumes:
-  # node-modules-front:
+  node-modules-front:
   node-modules-back:

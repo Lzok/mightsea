@@ -8,6 +8,11 @@ import { insertMultiple } from '@src/queries/users/insertMultiple';
 import { insertOne } from '@src/queries/nfts/insertOne';
 import { userErrors } from '@src/errors/users';
 import { nftErrors } from '@src/errors/nfts';
+import {
+	DEFAULT_PAGINATION_PAGE,
+	DEFAULT_PAGINATION_SIZE,
+} from '@src/constants/pagination';
+import * as feedModule from '@src/queries/nfts/getFeed';
 
 const request = supertest(app);
 const agent = supertest.agent(app);
@@ -57,17 +62,29 @@ const fakeMintData2 = {
 	path: 'static/something2.jpg',
 };
 
+const fakeMintData3 = {
+	description: 'Another NFT fake v3.0',
+	price: 70,
+	owner_id: co_creator_1.id,
+	creators: [co_creator_1.id],
+	path: 'static/something3.jpg',
+};
+
 let nft_id: string;
 let nft_2_id: string;
+let nft_3_id: string;
+
 describe('NFTs Routes', () => {
 	beforeAll(async () => {
 		await insertMultiple(allTestUsers);
-		const [nft, nft2] = await Promise.all([
+		const [nft, nft2, nft3] = await Promise.all([
 			insertOne(fakeMintData),
 			insertOne(fakeMintData2),
+			insertOne(fakeMintData3),
 		]);
 		nft_id = nft.id as string;
 		nft_2_id = nft2.id as string;
+		nft_3_id = nft3.id as string;
 	});
 
 	////////////////////////////////////////////////////////////////////////////
@@ -466,6 +483,82 @@ describe('NFTs Routes', () => {
 					expect(res.body.success).toBe(true);
 					expect(res.body.data.id).toBe(nft_2_id);
 					expect(res.body.data.price).toBe(price);
+				});
+		});
+	});
+
+	////////////////////////////////////////////////////////////////////////////
+	////////////////            FEED ENDPOINT                     //////////////
+	////////////////////////////////////////////////////////////////////////////
+	describe(`Feed Endpoint. ${API_BASE_URL}`, () => {
+		const spyFeed = jest.spyOn(feedModule, 'getFeed');
+
+		afterAll(() => spyFeed.mockClear());
+		it('Should return 401 UNAUTHORAIZED if there is no user in session', async () => {
+			return request
+				.get(`${API_BASE_URL}`)
+				.expect(HTTP_CODES.UNAUTHORIZED);
+		});
+
+		it('Should return 400 BAD_REQUEST if we send a non-number as the page query param', async () => {
+			await agent
+				.post(`${API_AUTH_URL}`)
+				.send({ user_id: userAlreadyOwner.id })
+				.expect(HTTP_CODES.OK);
+
+			return agent
+				.get(`${API_BASE_URL}`)
+				.query({ page: 'z' })
+				.expect(HTTP_CODES.BAD_REQUEST);
+		});
+
+		it('Should return 400 BAD_REQUEST if we send a non-number as the limit query param', async () => {
+			await agent
+				.post(`${API_AUTH_URL}`)
+				.send({ user_id: userAlreadyOwner.id })
+				.expect(HTTP_CODES.OK);
+
+			return agent
+				.get(`${API_BASE_URL}`)
+				.query({ limit: 'z' })
+				.expect(HTTP_CODES.BAD_REQUEST);
+		});
+
+		it('Should return 200 OK if we do not send a page param. The default value should be used', async () => {
+			await agent
+				.post(`${API_AUTH_URL}`)
+				.send({ user_id: userAlreadyOwner.id })
+				.expect(HTTP_CODES.OK);
+
+			return agent
+				.get(`${API_BASE_URL}`)
+				.query({ limit: 2 })
+				.expect(HTTP_CODES.OK)
+				.then((res) => {
+					expect(res.body.success).toBe(true);
+					expect(res.body.data.current_page).toBe(
+						DEFAULT_PAGINATION_PAGE
+					);
+				});
+		});
+
+		it('Should return 200 OK if we do not send a limit param. The default value should be used', async () => {
+			await agent
+				.post(`${API_AUTH_URL}`)
+				.send({ user_id: userAlreadyOwner.id })
+				.expect(HTTP_CODES.OK);
+
+			return agent
+				.get(`${API_BASE_URL}`)
+				.query({ page: 2 })
+				.expect(HTTP_CODES.OK)
+				.then((res) => {
+					expect(res.body.success).toBe(true);
+					expect(res.body.data.current_page).toBe(2);
+					expect(spyFeed).toHaveBeenCalledWith(
+						2,
+						DEFAULT_PAGINATION_SIZE
+					);
 				});
 		});
 	});

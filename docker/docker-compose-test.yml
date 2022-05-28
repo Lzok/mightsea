@@ -56,7 +56,7 @@ services:
       dockerfile: Dockerfile
       target: dev
     container_name: mightsea-backend-test
-    command: npm run test:integration
+    command: npm run test
     env_file:
       - ../server/.env.test
     ports:

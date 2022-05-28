@@ -5,6 +5,7 @@ import { COOKIES } from '@src/config/vars';
 import logger from '@src/config/logger';
 import { validate } from '@src/middlewares/validations';
 import { auth } from '@src/validations/auth';
+import { sendResponse } from '@src/errors/format';
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router
 
 			response.cookie('accessToken', accessToken, COOKIES.REFRESH_OPTS);
 
-			return response.json(user);
+			return sendResponse(response, user);
 		} catch (error) {
 			logger.error('Error route /api/v1/auth/fake ', error);
 			return response.sendStatus(400);
@@ -27,7 +28,7 @@ router
 	.route('/me')
 	.get(authenticate(), async (request: Request, response: Response) => {
 		try {
-			return response.json(request.user);
+			return sendResponse(response, request.user);
 		} catch (error) {
 			logger.error(error);
 			return response.json(error);

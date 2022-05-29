@@ -1,9 +1,5 @@
-import { Client, BucketItem, ItemBucketMetadata } from 'minio';
-
-// If we do not import multer, we cannot use its type from express: Express.Multer.File
-import 'multer';
+import { Client, ItemBucketMetadata } from 'minio';
 import storage from '@src/config/storage';
-import logger from '@src/config/logger';
 
 const region = 'CLOUD-00';
 
@@ -49,39 +45,6 @@ class Storage {
 		);
 	}
 
-	// Uploads contents from a file to objectName.
-	async fPutObject(
-		bucketName: string,
-		fileName: string,
-		filePath: string,
-		metadata: Metadata
-	) {
-		return this.storage.fPutObject(
-			bucketName,
-			fileName,
-			filePath,
-			metadata
-		);
-	}
-
-	async listObjects(bucketName: string, prefix = ''): Promise<BucketItem[]> {
-		return new Promise((resolve, reject) => {
-			const objects: BucketItem[] = [];
-
-			const stream = this.storage.listObjectsV2(bucketName, prefix, true);
-
-			stream.on('data', (obj) => {
-				objects.push(obj);
-			});
-			stream.on('error', (err) => {
-				return reject(err);
-			});
-			stream.on('end', () => {
-				return resolve(objects);
-			});
-		});
-	}
-
 	async uploadImage(
 		bucket: string,
 		path: string,
@@ -96,17 +59,6 @@ class Storage {
 		const etag = await this.putObject(bucket, path, buffer, size, metadata);
 
 		return { path: `${bucket}/${path}`, etag };
-	}
-
-	async objectExists(bucket: string, path: string) {
-		try {
-			// The statObject method returns an S3Error Not Found if the file does not exist.
-			const stats = await this.storage.statObject(bucket, path);
-			return stats;
-		} catch {
-			logger.info(`File ${path} in bucket ${bucket} does not exists.`);
-			return false;
-		}
 	}
 }
 

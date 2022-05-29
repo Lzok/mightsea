@@ -35,17 +35,6 @@ const userWithoutBalance = getDefaultUser();
 userWithoutBalance.balance = 2;
 const userAlreadyOwner = getDefaultUser();
 
-const allTestUsers = [
-	creator,
-	co_creator_1,
-	co_creator_2,
-	co_creator_3,
-	buyer_1,
-	buyer_2,
-	userWithoutBalance,
-	userAlreadyOwner,
-];
-
 const fakeMintData = {
 	description: 'Fake description for insert a minting row in the database',
 	price: 10,
@@ -62,13 +51,28 @@ const fakeMintData2 = {
 	path: 'static/something2.jpg',
 };
 
+const buyer_co_creator = getDefaultUser('buyer_co_creator');
+const owner_co_creator = getDefaultUser('owner_co_creator');
 const fakeMintData3 = {
 	description: 'Another NFT fake v3.0',
-	price: 70,
-	owner_id: co_creator_1.id,
-	creators: [co_creator_1.id],
+	price: 100,
+	owner_id: owner_co_creator.id,
+	creators: [owner_co_creator.id, buyer_co_creator.id],
 	path: 'static/something3.jpg',
 };
+
+const allTestUsers = [
+	creator,
+	co_creator_1,
+	co_creator_2,
+	co_creator_3,
+	buyer_1,
+	buyer_2,
+	userWithoutBalance,
+	userAlreadyOwner,
+	buyer_co_creator,
+	owner_co_creator,
+];
 
 let nft_id: string;
 let nft_2_id: string;
@@ -105,6 +109,9 @@ describe('NFTs Routes', () => {
 				.expect(HTTP_CODES.OK);
 
 			expect(buy1.body.success).toBe(true);
+			expect(buy1.body.data.savedBuy.newOwnership[0].owner_id).toBe(
+				buyer_1.id
+			);
 			expect(buy1.body.data.newBalances.old_owner_id).toBe(108.5);
 			expect(buy1.body.data.newBalances.buyer_id).toBe(90);
 			buy1.body.data.newBalances.creators.map((c: { balance: number }) =>
@@ -141,6 +148,9 @@ describe('NFTs Routes', () => {
 				.expect(HTTP_CODES.OK);
 
 			expect(buy2.body.success).toBe(true);
+			expect(buy2.body.data.savedBuy.newOwnership[0].owner_id).toBe(
+				buyer_2.id
+			);
 			expect(buy2.body.data.newBalances.old_owner_id).toBe(170);
 			expect(buy2.body.data.newBalances.buyer_id).toBe(0);
 			const originalCreator = buy2.body.data.newBalances.creators.find(
@@ -150,6 +160,28 @@ describe('NFTs Routes', () => {
 			buy2.body.data.newBalances.creators
 				.filter((c: { id: string }) => c.id !== originalCreator.id)
 				.map((c: { balance: number }) => expect(c.balance).toBe(105.5));
+		});
+
+		it('Should return 200 OK with the correct balances when a co_creator buy the nft to another co_creator and current owner', async () => {
+			await agent
+				.post(`${API_AUTH_URL}`)
+				.send({ user_id: buyer_co_creator.id })
+				.expect(HTTP_CODES.OK);
+
+			const buy1 = await agent
+				.post(`${API_BASE_URL}/buy`)
+				.send({
+					nft_id: nft_3_id,
+				})
+				.expect(HTTP_CODES.OK);
+
+			expect(buy1.body.success).toBe(true);
+			expect(buy1.body.data.savedBuy.newOwnership[0].owner_id).toBe(
+				buyer_co_creator.id
+			);
+			expect(buy1.body.data.newBalances.old_owner_id).toBe(190);
+			expect(buy1.body.data.newBalances.buyer_id).toBe(10);
+			expect(buy1.body.data.newBalances.creators.length).toBe(0);
 		});
 
 		it('Should return 400 BAD_REQUEST if the nft_id is not a valid uuid', async () => {

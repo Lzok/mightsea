@@ -8,6 +8,8 @@ services:
     volumes:
       - ./volumes/postgres-data-test:/var/lib/postgresql/data
       - ./configs/postgres/scripts-test:/docker-entrypoint-initdb.d
+    networks:
+      - mightsea-ntwrk-test
     ports:
       - 5432:5432
     environment:
@@ -25,6 +27,8 @@ services:
     container_name: mightsea-object-storage-test
     volumes:
       - ./volumes/object-storage-test:/data1
+    networks:
+      - mightsea-ntwrk-test
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -66,9 +70,14 @@ services:
     volumes:
       - '../server:/opt/app'
       - node-modules-back-test:/opt/app/node_modules
+    networks:
+      - mightsea-ntwrk-test
     depends_on:
       storage-1test:
         condition: service_healthy
 
 volumes:
   node-modules-back-test:
+
+networks:
+  mightsea-ntwrk-test: {}

@@ -1,3 +1,4 @@
+import logger from '@src/config/logger';
 import * as nftController from '@src/controllers/nfts';
 import { APIError } from '@src/errors/apiError';
 import { NFTBuyData } from '@src/queries/nfts/getDataBuyProcess';
@@ -15,7 +16,7 @@ const creators: NFTBuyData['creators'] = [
 const owner_id_included = 'userid1';
 const owner_id_not_included = 'useridzz71';
 
-// With a price of 100
+// With a price of 100 we get this result divided between 2 creators
 const pricingData = {
 	royaltyToShare: 20,
 	toOwner: 80,
@@ -180,10 +181,10 @@ describe('NFTs controller', () => {
 			expect(ownerAsCreator).toBeTruthy;
 			if (!ownerAsCreator)
 				throw new Error('ownerAsCreator should not be null here');
-			expect(ownerAsCreator[0].user_id).toBe(owner_id_included);
 
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
+			expect(ownerAsCreator[0].user_id).toBe(owner_id_included);
 			expect(co_creators.length).toBe(1);
 		});
 
@@ -195,8 +196,6 @@ describe('NFTs controller', () => {
 				);
 
 			expect(ownerAsCreator).toBe(null);
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
 			expect(co_creators.length).toBe(2);
 		});
 	});
@@ -232,7 +231,7 @@ describe('NFTs controller', () => {
 			expect(result).toStrictEqual(newBalancesBuyerAlsoCreator);
 		});
 
-		it.only('Should calculate the balance when the buyer and the current owner are also creators of the nft', () => {
+		it('Should calculate the balance when the buyer and the current owner are also creators of the nft', () => {
 			const result = nftController.calculateNewBalances(
 				buyerData,
 				nftDataBuyerAndOwnerAlsoCreator,

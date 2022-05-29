@@ -7,6 +7,8 @@ services:
     volumes:
       - ./volumes/postgres-data:/var/lib/postgresql/data
       - ./configs/postgres/scripts:/docker-entrypoint-initdb.d
+    networks:
+      - mightsea-ntwrk
     ports:
       - 5432:5432
     env_file:
@@ -25,6 +27,8 @@ services:
     image: dpage/pgadmin4:6.9
     container_name: pgadmin4_container
     restart: always
+    networks:
+      - mightsea-ntwrk
     ports:
       - "5050:80"
     environment:
@@ -41,6 +45,8 @@ services:
     container_name: mightsea-object-storage
     volumes:
       - ./volumes/object-storage:/data1
+    networks:
+      - mightsea-ntwrk
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -71,6 +77,8 @@ services:
       MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY}
     volumes:
       - ./configs/minio/setup.sh:/minio-setup.sh
+    networks:
+      - mightsea-ntwrk
     entrypoint: /minio-setup.sh
     depends_on:
       - storage-1
@@ -83,6 +91,8 @@ services:
       - ./configs/nginx/common-headers.conf:/etc/nginx/common-headers.conf:ro
       - ./configs/nginx/sites-available:/etc/nginx/sites-available:ro
       - ./configs/certs:/etc/nginx/certs
+    networks:
+      - mightsea-ntwrk
     ports:
       - "80:80"
       - "443:443"
@@ -106,6 +116,8 @@ services:
     volumes:
       - '../server:/opt/app'
       - node-modules-back:/opt/app/node_modules
+    networks:
+      - mightsea-ntwrk
     depends_on:
       mightsea-postgres:
         condition: service_healthy
@@ -124,9 +136,14 @@ services:
     volumes:
       - '../client:/opt/app'
       - node-modules-front:/opt/app/node_modules
+    networks:
+      - mightsea-ntwrk
     depends_on:
       - backend
 
 volumes:
   node-modules-front:
   node-modules-back:
+
+networks:
+  mightsea-ntwrk: {}

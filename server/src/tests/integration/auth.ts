@@ -46,7 +46,7 @@ describe('Authentication Routes', () => {
 				.get(`${API_BASE_URL}/me`)
 				.expect(HTTP_CODES.OK)
 				.then((res) => {
-					expect(res.body.email).toBe(user_1.email);
+					expect(res.body.data.email).toBe(user_1.email);
 				});
 		});
 		it('Should return 401 because there are no user in session', async () => {

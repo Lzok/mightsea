@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import debounce from 'lodash.debounce';
 import CreateNFT from '../components/create-nft';
 import Modal from '../components/modal';
@@ -16,6 +16,7 @@ const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
 
 type RefObjectFiles = {
 	files: FileList | [];
+	reset: () => void;
 };
 
 const Home: NextPage = () => {
@@ -57,32 +58,43 @@ const Home: NextPage = () => {
 		setPage(() => (page ? (page as unknown as number) : 1));
 	};
 
-	const onFileChange = async () => {
-		setShowMintModal(true);
-
-		if (inputImage.current) {
-			const objectUrl = URL.createObjectURL(inputImage.current.files[0]);
-			setNftPreview(objectUrl);
+	const onFileEvent = (files: FileList) => {
+		console.log('files', files);
+		const type = files[0].type;
+		if (
+			type.endsWith('jpg') ||
+			type.endsWith('jpeg') ||
+			type.endsWith('png')
+		) {
+			if (inputImage.current) {
+				inputImage.current.files = files;
+				const objectUrl = URL.createObjectURL(
+					inputImage.current.files[0]
+				);
+				setNftPreview(objectUrl);
+				setShowMintModal(true);
+			}
+		} else {
+			alert('Only jpg and png are accepted.');
 		}
+	};
+
+	const onFileChange = async (
+		e: ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLLabelElement>
+	) => {
+		const target = e.target as HTMLInputElement;
+
+		if (target.files) onFileEvent(target.files);
 	};
 
 	const closeModal = () => {
 		setShowMintModal(false);
-		if (inputImage.current) inputImage.current.files = [];
 	};
 
 	const onFileDrop = (e: React.DragEvent<HTMLLabelElement>) => {
 		e.preventDefault();
 		const { dataTransfer } = e;
-
-		if (dataTransfer.files[0].type.startsWith('image/')) {
-			if (inputImage.current) {
-				inputImage.current.files = dataTransfer.files;
-				onFileChange();
-			}
-		} else {
-			alert('Only jpg and png are accepted.');
-		}
+		onFileEvent(dataTransfer.files);
 	};
 
 	const mint = () => {
@@ -105,7 +117,7 @@ const Home: NextPage = () => {
 			{user ? (
 				<Upload
 					onFileDrop={(e) => onFileDrop(e)}
-					onFileChange={onFileChange}
+					onFileChange={(e) => onFileChange(e)}
 					// @ts-ignore
 					ref={inputImage}
 				/>

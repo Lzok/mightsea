@@ -494,11 +494,6 @@ describe('NFTs Routes', () => {
 		const spyFeed = jest.spyOn(feedModule, 'getFeed');
 
 		afterAll(() => spyFeed.mockClear());
-		it('Should return 401 UNAUTHORAIZED if there is no user in session', async () => {
-			return request
-				.get(`${API_BASE_URL}`)
-				.expect(HTTP_CODES.UNAUTHORIZED);
-		});
 
 		it('Should return 400 BAD_REQUEST if we send a non-number as the page query param', async () => {
 			await agent

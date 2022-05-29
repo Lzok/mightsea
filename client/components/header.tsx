@@ -1,14 +1,24 @@
+import { useState } from 'react';
 import { NextPage } from 'next';
 import Image from 'next/image';
 import { UserBasicData } from '../@types/user';
 import { useLogin } from '../hooks/useLogin';
+import { useLogout } from '../hooks/useLogout';
 import { useUserSession } from '../hooks/useUserSession';
+import Modal from '../components/modal';
+import Login from '../components/login';
 
 type UserProps = {
 	user: UserBasicData;
 };
 
 const UserInfoHeader: NextPage<UserProps> = ({ user }) => {
+	const logoutMutation = useLogout();
+
+	function logout() {
+		return logoutMutation.mutate();
+	}
+
 	return (
 		<>
 			<Image
@@ -19,24 +29,41 @@ const UserInfoHeader: NextPage<UserProps> = ({ user }) => {
 				alt="User Avatar"
 			/>
 			<div className="mx-5 font-bold">{user.name}</div>
+			<i onClick={logout} className="ri-shut-down-line"></i>
 		</>
 	);
 };
 
 const LoginHeader: NextPage = () => {
+	const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+	const [userId, setUserId] = useState<string>('');
 	const authMutation = useLogin();
 
-	function fakeLogin(user_id: UserBasicData['id']) {
-		return authMutation.mutate(user_id);
-	}
+	const fakeLogin = () => {
+		return authMutation.mutate(userId);
+	};
+
+	const onModalClose = () => {
+		setShowLoginModal(false);
+		setUserId('');
+	};
 
 	return (
-		<button
-			onClick={() => fakeLogin('78f8ce6f-1940-404e-be23-60b8f77926f5')}
-			className="flex items-center rounded-lg w-full p-3 bg-blue-700 hover:bg-blue-600 text-white"
-		>
-			<span>Login</span>
-		</button>
+		<>
+			<button
+				onClick={() => setShowLoginModal(true)}
+				className="flex items-center rounded-lg w-full p-3 bg-blue-700 hover:bg-blue-600 text-white"
+			>
+				<span>Login</span>
+			</button>
+			<Modal show={showLoginModal}>
+				<Login
+					setUserId={(e) => setUserId(e.target.value)}
+					onClickLogin={fakeLogin}
+					onClose={onModalClose}
+				></Login>
+			</Modal>
+		</>
 	);
 };
 

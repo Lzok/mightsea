@@ -11,10 +11,10 @@ import Upload from '../components/upload';
 import { useFeedNft } from '../hooks/useFeed';
 import { useMint } from '../hooks/useMintNft';
 
-const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
 
 type RefObjectFiles = {
-	files: FileList;
+	files: FileList | [];
 };
 
 const Home: NextPage = () => {
@@ -52,14 +52,16 @@ const Home: NextPage = () => {
 
 	const onFileChange = async () => {
 		setShowMintModal(true);
-		const objectUrl = URL.createObjectURL(inputImage?.current?.files[0]);
 
-		setNftPreview(objectUrl);
+		if (inputImage.current) {
+			const objectUrl = URL.createObjectURL(inputImage.current.files[0]);
+			setNftPreview(objectUrl);
+		}
 	};
 
 	const closeModal = () => {
 		setShowMintModal(false);
-		inputImage.current.value = '';
+		if (inputImage.current) inputImage.current.files = [];
 	};
 
 	const onFileDrop = (e: React.DragEvent<HTMLLabelElement>) => {
@@ -67,8 +69,10 @@ const Home: NextPage = () => {
 		const { dataTransfer } = e;
 
 		if (dataTransfer.files[0].type.startsWith('image/')) {
-			inputImage.current.files = dataTransfer.files;
-			onFileChange();
+			if (inputImage.current) {
+				inputImage.current.files = dataTransfer.files;
+				onFileChange();
+			}
 		} else {
 			alert('Only jpg and png are accepted.');
 		}
@@ -91,6 +95,7 @@ const Home: NextPage = () => {
 			<Upload
 				onFileDrop={(e) => onFileDrop(e)}
 				onFileChange={onFileChange}
+				// @ts-ignore
 				ref={inputImage}
 			/>
 
@@ -98,7 +103,7 @@ const Home: NextPage = () => {
 				<CreateNFT
 					nftPreview={nftPreview}
 					onClose={closeModal}
-					setPrice={(e) => debouncedSetPrice(e.target.value)}
+					setPrice={(e) => debouncedSetPrice(Number(e.target.value))}
 					setDescription={(e) =>
 						debouncedSetDescription(e.target.value)
 					}

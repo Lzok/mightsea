@@ -36,22 +36,30 @@ const Pagination: NextPage<PaginationProps> = ({
 	return (
 		<div className="container mx-auto my-10">
 			<ul className="flex items-center justify-center">
-				<li className="px-5 py-3 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg mx-2">
+				<li>
 					<button
 						onClick={() =>
 							prevPage ? onPageClick(prevPage) : false
 						}
 						disabled={page === 1}
+						className={`px-5 py-3 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg mx-2 ${
+							page === 1 ? 'cursor-not-allowed' : ''
+						}`}
 					>
 						<i className="ri-arrow-left-s-line" />
 					</button>
 				</li>
 				{needStartTrim && (
 					<>
-						<li className="px-5 py-3 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg mx-2">
+						<li>
 							<button
 								onClick={() => onPageClick(1)}
 								disabled={page === 1}
+								className={`px-5 py-3 cursor-pointer rounded-lg mx-2 ${
+									page === 1
+										? 'bg-blue-500 hover:bg-blue-600 text-white'
+										: 'bg-gray-300 hover:bg-gray-400'
+								}`}
 							>
 								1
 							</button>
@@ -63,7 +71,11 @@ const Pagination: NextPage<PaginationProps> = ({
 					<li key={`${page}-${pageNumber}-${totalPages}`}>
 						<button
 							onClick={() => onPageClick(pageNumber)}
-							className="px-5 py-3 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg mx-2"
+							className={`px-5 py-3 cursor-pointer rounded-lg mx-2 ${
+								page === pageNumber
+									? 'bg-blue-500 hover:bg-blue-600 text-white'
+									: 'bg-gray-300 hover:bg-gray-400'
+							}`}
 						>
 							{pageNumber}
 						</button>
@@ -75,7 +87,11 @@ const Pagination: NextPage<PaginationProps> = ({
 						<li>
 							<button
 								onClick={() => onPageClick(totalPages)}
-								className="px-5 py-3 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg mx-2"
+								className={`px-5 py-3 cursor-pointer rounded-lg mx-2 ${
+									page === totalPages
+										? 'bg-blue-500 hover:bg-blue-600 text-white'
+										: 'bg-gray-300 hover:bg-gray-400'
+								}`}
 							>
 								{totalPages}
 							</button>
@@ -87,7 +103,9 @@ const Pagination: NextPage<PaginationProps> = ({
 						onClick={() =>
 							nextPage ? onPageClick(nextPage) : false
 						}
-						className="px-5 py-3 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg mx-2"
+						className={`px-5 py-3 cursor-pointer bg-gray-300 hover:bg-gray-400 rounded-lg mx-2 ${
+							page === totalPages ? 'cursor-not-allowed' : ''
+						}`}
 					>
 						<i className="ri-arrow-right-s-line" />
 					</button>

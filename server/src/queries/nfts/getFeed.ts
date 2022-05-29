@@ -22,10 +22,15 @@ export async function getFeed(
             `);
 
 			const nftsProm = tsxConn.query(sql`
-                SELECT nfts.id, nfts.created_at, description, price, path, owner_id, owner.name as owner_name
-                FROM nfts
-                INNER JOIN users as owner
-                ON nfts.owner_id = owner.id
+				SELECT nfts.id, nfts.created_at, description, price, path, owner_id, owner.name as owner_name, json_agg(json_build_object('user_id', creators.user_id, 'name', users.name)) as creators
+				FROM nfts
+				INNER JOIN users_nfts as creators
+				ON nfts.id = creators.nft_id
+				INNER JOIN users
+				ON creators.user_id = users.id
+				INNER JOIN users as owner
+				ON nfts.owner_id = owner.id
+				GROUP BY nfts.id, owner.id
 				ORDER BY created_at DESC
                 LIMIT ${limit}
                 OFFSET ${offset}

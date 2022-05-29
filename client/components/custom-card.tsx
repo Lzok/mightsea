@@ -47,13 +47,6 @@ const CustomCard: NextPage<Props> = ({ nft }) => {
 
 	return (
 		<div className="bg-white rounded-lg">
-			{/* <Image
-				src={`${APP_BASE_URL}/${nft.path}`}
-				width="600px"
-				height="400px"
-				className="p-5 rounded-lg w-full"
-				alt={nft.description}
-			/> */}
 			<img
 				src={`${APP_BASE_URL}/${nft.path}`}
 				alt={nft.description}
@@ -72,6 +65,9 @@ const CustomCard: NextPage<Props> = ({ nft }) => {
 				)}
 			</div>
 			<div className="px-5 py-5 pt-0">Owner: {nft.owner_name}</div>
+			<div className="px-5 py-5 pt-0">
+				Creators: {nft.creators.map((c) => c.name).join(', ')}
+			</div>
 		</div>
 	);
 };

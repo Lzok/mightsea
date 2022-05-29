@@ -8,6 +8,10 @@ export type NFT = {
 	path: string;
 	owner_id: UserBasicData['id'];
 	owner_name: UserBasicData['name'];
+	creators: {
+		user_id: UserBasicData['id'];
+		name: string;
+	}[];
 };
 
 export type FeedNFT = {

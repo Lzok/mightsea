@@ -28,7 +28,10 @@ const UserInfoHeader: NextPage<UserProps> = ({ user }) => {
 				height="40px"
 				alt="User Avatar"
 			/>
-			<div className="mx-5 font-bold">{user.name}</div>
+			<div className="mx-5 flex flex-col">
+				<div className="font-bold">{user.name}</div>
+				<div className="font-bold">${user.balance}</div>
+			</div>
 			<i onClick={logout} className="ri-shut-down-line"></i>
 		</>
 	);
@@ -40,6 +43,7 @@ const LoginHeader: NextPage = () => {
 	const authMutation = useLogin();
 
 	const fakeLogin = () => {
+		if (userId === '') alert('User ID cannot be an empty string');
 		return authMutation.mutate(userId);
 	};
 

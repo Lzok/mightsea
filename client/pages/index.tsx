@@ -10,6 +10,7 @@ import Pagination from '../components/pagination';
 import Upload from '../components/upload';
 import { useFeedNft } from '../hooks/useFeed';
 import { useMint } from '../hooks/useMintNft';
+import { useUserSession } from '../hooks/useUserSession';
 
 const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
 
@@ -36,6 +37,12 @@ const Home: NextPage = () => {
 
 	// Mint Mutation. This will be executed when we want to send the data to mint an NFT to the backend
 	const mintMutation = useMint();
+
+	const {
+		data: user,
+		isLoading: isLoadingUser,
+		isError: isErrorUser,
+	} = useUserSession({});
 
 	const { data: feed, isLoading, isError } = useFeedNft(page);
 
@@ -90,14 +97,27 @@ const Home: NextPage = () => {
 	if (isLoading) return <>Loading feed...</>;
 	if (isError) return <>Some error happened loading feed.</>;
 
+	if (isLoadingUser) return <>Loading user...</>;
+	if (isErrorUser) return <>Some error happened loading user.</>;
+
 	return (
 		<div className="md:container mx-auto">
-			<Upload
-				onFileDrop={(e) => onFileDrop(e)}
-				onFileChange={onFileChange}
-				// @ts-ignore
-				ref={inputImage}
-			/>
+			{user ? (
+				<Upload
+					onFileDrop={(e) => onFileDrop(e)}
+					onFileChange={onFileChange}
+					// @ts-ignore
+					ref={inputImage}
+				/>
+			) : (
+				<div className="mb-5 mx-5">
+					<div className="flex justify-center w-full h-20 px-4 transition bg-blue-100 border-2 border-blue-700 border-dashed rounded-md appearance-none hover:border-blue-400 focus:outline-none">
+						<span className="flex items-center space-x-2">
+							Please Log In to mint your own NFTs!
+						</span>
+					</div>
+				</div>
+			)}
 
 			<Modal show={showMintModal}>
 				<CreateNFT

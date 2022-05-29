@@ -26,6 +26,7 @@ export async function getFeed(
                 FROM nfts
                 INNER JOIN users as owner
                 ON nfts.owner_id = owner.id
+				ORDER BY created_at DESC
                 LIMIT ${limit}
                 OFFSET ${offset}
             `);

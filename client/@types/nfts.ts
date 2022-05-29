@@ -15,3 +15,8 @@ export type FeedNFT = {
 	total_pages: number;
 	rows: NFT[];
 };
+
+export type MintedNFT = Pick<
+	NFT,
+	'description' | 'price' | 'path' | 'owner_id'
+> & { nft_id: string };

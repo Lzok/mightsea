@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { NextPage } from 'next';
 import { NFT } from '../@types/nfts';
 import { APP_BASE_URL } from '../constants/urls';
@@ -21,6 +20,7 @@ const CustomCard: NextPage<Props> = ({ nft }) => {
 				src={`${APP_BASE_URL}/${nft.path}`}
 				alt={nft.description}
 				className="p-5 rounded-lg w-full"
+				style={{ width: '600px', height: '400px' }}
 			/>
 			<div className="px-5 py-5 pt-0">{nft.description}</div>
 			<div className="p-5 pt-0">

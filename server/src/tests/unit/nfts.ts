@@ -89,6 +89,64 @@ const nftDataOwnerNotCreator = {
 	],
 };
 
+/**
+ * This is for the case where the buyer is also one of the creators
+ */
+const nftDataBuyerAlsoCreator = {
+	id: '5081e31e-084a-450d-b16d-23a7eedefd11',
+	price: 100,
+	owner_id: '23e3412f-e10d-4ff8-9953-3f805b532782',
+	owner_balance: 100,
+	creators: [
+		{
+			user_id: '78f8ce6f-1940-404e-be23-60b8f77926f5',
+			balance: 100,
+		},
+		{
+			user_id: '7dd619dd-b997-4351-9541-4d8989c58667',
+			balance: 100,
+		},
+	],
+};
+
+const newBalancesBuyerAlsoCreator = {
+	buyer_id: 10,
+	old_owner_id: 180,
+	creators: [
+		{
+			id: '7dd619dd-b997-4351-9541-4d8989c58667',
+			balance: 110,
+		},
+	],
+};
+
+/**
+ * This is for the case where the buyer is also one of the creators AND
+ * the current owner is also a creator.
+ * The scenario is one co_cocreator buying the NFT to the creator that also is the current owner.
+ */
+const nftDataBuyerAndOwnerAlsoCreator = {
+	id: '5081e31e-084a-450d-b16d-23a7eedefd11',
+	price: 100,
+	owner_id: '23e3412f-e10d-4ff8-9953-3f805b532782',
+	owner_balance: 100,
+	creators: [
+		{
+			user_id: '78f8ce6f-1940-404e-be23-60b8f77926f5',
+			balance: 100,
+		},
+		{
+			user_id: '23e3412f-e10d-4ff8-9953-3f805b532782',
+			balance: 100,
+		},
+	],
+};
+const newBalancesBuyerAndOwnerAlsoCreator = {
+	buyer_id: 10,
+	old_owner_id: 190,
+	creators: [],
+};
+
 describe('NFTs controller', () => {
 	describe('Fn calculateRoyalties', () => {
 		test('It should calculate the amounts ok when there is more than one creator', () => {
@@ -111,10 +169,10 @@ describe('NFTs controller', () => {
 		});
 	});
 
-	describe('Fn separateOwnerFromCreatorsIfExist', () => {
+	describe('Fn separateUserFromCreatorsIfExist', () => {
 		it('Should return the owner as a separate item because it exists in the creators', () => {
 			const [ownerAsCreator, co_creators] =
-				nftController.separateOwnerFromCreatorsIfExist(
+				nftController.separateUserFromCreatorsIfExist(
 					owner_id_included,
 					creators
 				);
@@ -131,7 +189,7 @@ describe('NFTs controller', () => {
 
 		it('Should return null as the owner because it does not exist exists in the creators', () => {
 			const [ownerAsCreator, co_creators] =
-				nftController.separateOwnerFromCreatorsIfExist(
+				nftController.separateUserFromCreatorsIfExist(
 					owner_id_not_included,
 					creators
 				);
@@ -162,6 +220,26 @@ describe('NFTs controller', () => {
 			);
 
 			expect(result).toStrictEqual(newBalancesOwnerNotCreator);
+		});
+
+		it('Should calculate the balance when the buyer is also creator of the nft', () => {
+			const result = nftController.calculateNewBalances(
+				buyerData,
+				nftDataBuyerAlsoCreator,
+				pricingData
+			);
+
+			expect(result).toStrictEqual(newBalancesBuyerAlsoCreator);
+		});
+
+		it.only('Should calculate the balance when the buyer and the current owner are also creators of the nft', () => {
+			const result = nftController.calculateNewBalances(
+				buyerData,
+				nftDataBuyerAndOwnerAlsoCreator,
+				pricingData
+			);
+
+			expect(result).toStrictEqual(newBalancesBuyerAndOwnerAlsoCreator);
 		});
 	});
 });

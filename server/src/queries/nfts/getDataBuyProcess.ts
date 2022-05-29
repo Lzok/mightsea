@@ -3,15 +3,16 @@ import { UserBasicData, UserId } from '@src/@types/user';
 import { getPool, sql } from '@src/config/db';
 import logger from '@src/config/logger';
 
+export type NFTCreator = {
+	user_id: UserId;
+	balance: number;
+};
 export type NFTBuyData = {
 	id: NftId;
 	price: number;
 	owner_id: UserId;
 	owner_balance: number;
-	creators: {
-		user_id: UserId;
-		balance: number;
-	}[];
+	creators: NFTCreator[];
 };
 type Return = {
 	buyerData: UserBasicData | null;

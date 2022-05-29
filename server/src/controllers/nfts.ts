@@ -12,6 +12,7 @@ import s3Lib from '@src/library/s3';
 import {
 	getDataBuyProcess,
 	NFTBuyData,
+	NFTCreator,
 } from '@src/queries/nfts/getDataBuyProcess';
 import { insertOne } from '@src/queries/nfts/insertOne';
 import { generateNftName } from '@src/utils/nfts';
@@ -151,14 +152,29 @@ export function calculateNewBalances(
 	 * In this case, if the current owner is also a creator, we remove him from the
 	 * creators array and sum the royalty + selling price under the old_owner_id key.
 	 */
-	const [ownerAsCreator, creators] = separateOwnerFromCreatorsIfExist(
-		nftData.owner_id,
-		creatorsCopy
-	);
+	const [ownerAsCreator, creatorsMaybeWithoutOwner] =
+		separateUserFromCreatorsIfExist(nftData.owner_id, creatorsCopy);
 
 	if (ownerAsCreator) {
 		someNewBalances.old_owner_id = parseFloat(
 			someNewBalances.old_owner_id + pricingData.toCreators.toFixed(2)
+		);
+	}
+
+	/**
+	 * If the buyer is also one of the creators, we have to sum to his balance the royalties.
+	 * We have already subtracted the value of the nft from his balance.
+	 * So what we would do is remove him from the creators array and manipulate his balance
+	 * directly on the buyer_id object.
+	 */
+	const [buyerAsCreator, creatorsRemaining] = separateUserFromCreatorsIfExist(
+		buyerData.id,
+		creatorsMaybeWithoutOwner
+	);
+
+	if (buyerAsCreator) {
+		someNewBalances.buyer_id = parseFloat(
+			someNewBalances.buyer_id + pricingData.toCreators.toFixed(2)
 		);
 	}
 
@@ -172,7 +188,7 @@ export function calculateNewBalances(
 			).toFixed(2)
 		),
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		creators: creators!.map((c) => ({
+		creators: creatorsRemaining!.map((c) => ({
 			id: c.user_id,
 			balance: parseFloat(
 				(c.balance + pricingData.toCreators).toFixed(2)
@@ -183,18 +199,18 @@ export function calculateNewBalances(
 	return newBalances;
 }
 
-export function separateOwnerFromCreatorsIfExist(
-	owner_id: UserId,
+export function separateUserFromCreatorsIfExist(
+	user_id: UserId,
 	creators: NFTBuyData['creators']
-) {
+): [NFTCreator | null, NFTBuyData['creators'] | []] {
 	const arr = klona(creators);
-	const index = creators.findIndex((c) => c.user_id === owner_id);
-	let owner = null;
+	const index = creators.findIndex((c) => c.user_id === user_id);
+	let user = null;
 
 	if (index > -1) {
-		owner = arr.splice(index, 1);
+		user = arr.splice(index, 1) as unknown as NFTCreator;
 	}
-	return [owner, arr];
+	return [user, arr];
 }
 
 export async function updatePrice(
